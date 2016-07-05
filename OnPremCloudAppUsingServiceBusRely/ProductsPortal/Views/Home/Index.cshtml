@@ -1,27 +1,16 @@
-﻿@model IEnumerable<ProductsPortal.Models.Product>
+﻿@model ProductsPortal.Models.EmployeeViewModel
 @{
     ViewBag.Title = "Index";
 }
-<h2>Prod Inventory</h2>
+<h2>~User</h2>
 <table>
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th></th>
-        <th>
-            @Html.DisplayNameFor(model => model.Quantity)
-        </th>
+        <td>
+            @Html.DisplayFor(model => model.UserId)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Username)
+        </td>
     </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-        </tr>
-    }
+    
 </table>

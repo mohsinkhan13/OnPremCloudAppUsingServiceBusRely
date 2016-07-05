@@ -5,19 +5,18 @@
     using System.Web.Mvc;
     using Microsoft.ServiceBus;
     using Models;
-    using ProductsServer;
-    using static ProductsServer.ProductsContract;
+    using static CCHServer.EmployeeContract;
     public class HomeController : Controller
     {
         // Declare the channel factory.
-        private static ChannelFactory<IProductsChannel> _channelFactory;
+        private static ChannelFactory<IEmployeeChannel> _channelFactory;
 
         static HomeController()
         {
             // Create shared access signature token credentials for authentication.
-            _channelFactory = new ChannelFactory<IProductsChannel>(new NetTcpRelayBinding(),
-                "sb://mktestrelay.servicebus.windows.net/products");
-            _channelFactory.Endpoint.Behaviors.Add(new TransportClientEndpointBehavior
+            _channelFactory = new ChannelFactory<IEmployeeChannel>(new NetTcpRelayBinding(),
+                "sb://mktestrelay.servicebus.windows.net/central");
+            _channelFactory.Endpoint.Behaviors.Add(new  TransportClientEndpointBehavior
             {
                 TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(
                     "RootManageSharedAccessKey", "zMSPq+sqa7tjeTKvbdcTAXT6/rNNRDkQvzPb6zNiC2A=")
@@ -26,17 +25,25 @@
 
         public ActionResult Index()
         {
-            using (IProductsChannel channel = _channelFactory.CreateChannel())
+            using (IEmployeeChannel channel = _channelFactory.CreateChannel())
             {
                 // Return a view of the products inventory.
-                return View(from prod in channel.GetProducts()
-                            select new Product
-                                {
-                                    Id = prod.Id,
-                                    Name = prod.Name,
-                                    Quantity = prod.Quantity
-                                }
-                           );
+                var res = channel.AuthenticateUser(new EmployeeData
+                {
+                    Username = "mohsink13@gmail.com",
+                    Password = "sdasd"
+                });
+
+                if(res != null)
+                {
+                    var viewModel = new EmployeeViewModel
+                    {
+                        Username = res.Username
+                    };
+                    return View(viewModel);
+                }
+
+                return View(new EmployeeViewModel());
             }
         }
     }

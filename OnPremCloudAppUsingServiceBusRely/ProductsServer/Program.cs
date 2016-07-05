@@ -1,29 +1,26 @@
-﻿namespace ProductsServer
+﻿namespace CCHServer
 {
     using Microsoft.ServiceBus;
     using System;
-    using System.Collections.Generic;
     using System.ServiceModel;
-    using static ProductsContract;
-    class ProductsService : IProducts
+    using static EmployeeContract;
+    class EmployeeService : IEmployeeService
     {
-        ProductData[] products =
-            new[]
-                {
-                    new ProductData{ Id = "1", Name = "Rock",
-                                     Quantity = "1"},
-                    new ProductData{ Id = "2", Name = "Paper",
-                                     Quantity = "3"},
-                    new ProductData{ Id = "3", Name = "Scissors",
-                                     Quantity = "5"},
-                    new ProductData{ Id = "4", Name = "Well",
-                                     Quantity = "2500"},
-                };
-
-        public IList<ProductData> GetProducts()
+        public EmployeeData AuthenticateUser(EmployeeData employee)
         {
-            Console.WriteLine("GetProducts called.");
-            return products;
+            Console.WriteLine("AuthenticateUser called.");
+            if (employee.Username == "mohsink13@gmail.com")
+            {
+                Console.WriteLine($"Authentication successful for {employee.Username}");
+                return new EmployeeData
+                {
+                    Username = employee.Username,
+                    UserId = "1"
+                };
+            }
+            Console.WriteLine($"Authentication failure for {employee.Username}");
+            return null;
+            
         }
     }
 
@@ -31,12 +28,12 @@
     {
         static void Main(string[] args)
         {
-            var sh = new ServiceHost(typeof(ProductsService));
+            var sh = new ServiceHost(typeof(EmployeeService));
 
             sh.AddServiceEndpoint(
-                typeof(IProducts), 
+                typeof(IEmployeeService), 
                 new NetTcpRelayBinding(),
-                ServiceBusEnvironment.CreateServiceUri("sb","mktestrelay","products"))
+                ServiceBusEnvironment.CreateServiceUri("sb","mktestrelay","central"))
                 .Behaviors.Add(new TransportClientEndpointBehavior
                 {
                     TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider("RootManageSharedAccessKey", "zMSPq+sqa7tjeTKvbdcTAXT6/rNNRDkQvzPb6zNiC2A=")
